@@ -53,13 +53,16 @@ for subject in data["words"]:
 
     for link in linkstab:
         url = f"https://www.pinterest.fr{link}"
-        digits = link[-5:]
+        digits = link[-7:]
         digits = digits.replace('/','')
         response = requests.get(url)
         html = response.text
         soup = Bs(html,'html.parser')
         img = soup.find('img')
-        img_url = img.get('src')
+        try:
+            img_url = img.get('src')
+        except:
+            img_url = None
         try:
             linkcreator = soup.find("div", {"data-test-id": "official-user-attribution"})
             acreator = linkcreator.find("a")
@@ -67,9 +70,9 @@ for subject in data["words"]:
             creator = creator.replace('/', '')
         except:
             creator = "NoUserCreation"
-        img_data = requests.get(img_url).content
-        img_len = len(img_data)
         try:
+            img_data = requests.get(img_url).content
+            img_len = len(img_data)
             if(img_len>10000):
                 if creator in data["banlist"]:
                     print("Utilisateur bloqué")
